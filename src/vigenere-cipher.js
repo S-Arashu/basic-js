@@ -1,4 +1,4 @@
-const { NotImplementedError } = require('../lib');
+const { NotImplementedError } = require("../lib");
 
 /**
  * Implement class VigenereCipheringMachine that allows us to create
@@ -20,14 +20,63 @@ const { NotImplementedError } = require('../lib');
  *
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  encrypt(message, keyword) {
+    if (!message || !keyword) {
+      throw new Error("Incorrect arguments!");
+    }
+
+    return this.cipher(message, keyword, true);
+  }
+
+  decrypt(message, keyword) {
+    if (!message || !keyword) {
+      throw new Error("Incorrect arguments!");
+    }
+
+    return this.cipher(message, keyword, false);
+  }
+
+  cipher(message, keyword, isEncrypt) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let result = "";
+    let keywordIndex = 0;
+
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+
+      if (alphabet.includes(char.toUpperCase())) {
+        const charIndex = alphabet.indexOf(char.toUpperCase());
+        const keyCharIndex = alphabet.indexOf(
+          keyword[keywordIndex % keyword.length].toUpperCase()
+        );
+        let newIndex;
+
+        if (isEncrypt) {
+          newIndex = (charIndex + keyCharIndex) % alphabet.length;
+        } else {
+          newIndex =
+            (charIndex - keyCharIndex + alphabet.length) % alphabet.length;
+        }
+
+        result +=
+          char.toLowerCase() === char
+            ? alphabet[newIndex].toLowerCase()
+            : alphabet[newIndex];
+        keywordIndex++;
+      } else {
+        result += char;
+      }
+    }
+
+    if (!this.isDirect) {
+      result = result.split("").reverse().join("");
+    }
+
+    return result.toUpperCase();
   }
 }
 
